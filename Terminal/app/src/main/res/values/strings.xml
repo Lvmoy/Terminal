@@ -1,0 +1,36 @@
+<resources>
+<string name="app_name">Terminal</string>
+<string name="login_address">&#160;&#160;&#160;&#160;登录地址</string>
+<string name="login_user">&#160;&#160;&#160;&#160;用户名</string>
+<string name="login_psd">&#160;&#160;密码</string>
+    <string name="login_tv_login">登录</string>
+    <string name="home_polycom">POLYCOM</string>
+    <string name="home_3g">3G/4G：</string>
+    <string name="home_bd">北斗：</string>
+    <string name="home_570">CDM570：</string>
+    <string name="home_5975">CDR5975：</string>
+    <string name="home_video">视频业务</string>
+    <string name="home_bd_guide">北斗业务</string>
+
+    <string name="home_data">数据业务</string>
+    <string name="home_tools">实用工具</string>
+    <string name="home_detail_common">通用</string>
+    <string name="home_detail_3g">3G/4G</string>
+    <string name="home_detail_bd">北斗</string>
+    <string name="home_detail_570">CDM-570</string>
+    <string name="home_detail_voip">VoIP</string>
+    <string name="home_detail_570_ping">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;PING模块</string>
+    <string name="home_detail_item_to_cat_ip">对端卫星猫的IP地址</string>
+    <string name="home_detail_item_to_wan_ip">对端路由器WAN口IP地址</string>
+    <string name="home_detail_item_to_lan_ip">对端路由器LAN口IP地址</string>
+    <string name="home_detail_item_data_change">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;数据修改模块</string>
+    <string name="home_detail_item_send_hz">发射频率（Hz）</string>
+    <string name="home_detail_item_bps">发射数据速率（bps）</string>
+    <string name="home_detail_item_dbm">输出电平（dbm）</string>
+    <string name="home_detail_item_state">输出状态</string>
+    <string name="home_detail_item_receive_hz">接收频率（Hz）</string>
+    <string name="home_detail_item_receive_bps">接收数据速率（bps）</string>
+    <string name="home_detail_bt_set">设置</string>
+
+
+</resources>
