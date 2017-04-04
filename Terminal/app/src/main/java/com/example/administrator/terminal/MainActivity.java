@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -45,7 +44,6 @@ public class MainActivity extends Activity {
 
 
     private LeftPopupWindow leftPopupWindow;
-//    private int[] colorFlag = new int[]{0, 0, 0, 0};
     private static boolean isExit = false;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,43 +59,15 @@ public class MainActivity extends Activity {
         switch (view.getId()) {
             case R.id.tv_home_video:
                 showPopupWindow(view, 1);
-//                if (colorFlag[0] == 0) {
-//                    view.setBackgroundColor(getResources().getColor(R.color.colorBlue));
-//                    colorFlag[0] = 1;
-//                } else {
-//                    view.setBackgroundColor(getResources().getColor(R.color.colorDarkSlateGray));
-//                    colorFlag[0] = 0;
-//                }
                 break;
             case R.id.tv_home_bd_guide:
                 showPopupWindow(view, 2);
-//                if (colorFlag[1] == 0) {
-//                    view.setBackgroundColor(getResources().getColor(R.color.colorBlue));
-//                    colorFlag[1] = 1;
-//                } else {
-//                    view.setBackgroundColor(getResources().getColor(R.color.colorDarkSlateGray));
-//                    colorFlag[1] = 0;
-//                }
                 break;
             case R.id.tv_home_data:
                 showPopupWindow(view, 3);
-//                if (colorFlag[2] == 0) {
-//                    view.setBackgroundColor(getResources().getColor(R.color.colorBlue));
-//                    colorFlag[2] = 1;
-//                } else {
-//                    view.setBackgroundColor(getResources().getColor(R.color.colorDarkSlateGray));
-//                    colorFlag[2] = 0;
-//                }
                 break;
             case R.id.tv_home_tools:
                 showPopupWindow(view, 4);
-//                if (colorFlag[3] == 0) {
-//                    view.setBackgroundColor(getResources().getColor(R.color.colorBlue));
-//                    colorFlag[3] = 1;
-//                } else {
-//                    view.setBackgroundColor(getResources().getColor(R.color.colorDarkSlateGray));
-//                    colorFlag[3] = 0;
-//                }
                 break;
             case R.id.tv_home_570:
                 Intent intent = new Intent(MainActivity.this, HomeDetailActivity.class);

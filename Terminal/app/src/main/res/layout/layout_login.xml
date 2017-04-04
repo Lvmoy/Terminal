@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:whatever="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
@@ -49,7 +50,10 @@
                                             android:layout_weight="1"
                                             android:gravity="right">
 
-                                                <EditText
+                                                <utils.edittextvalidator.widget.FormEditText
+                                                    whatever:testType="ipAddress"
+                                                    whatever:emptyErrorString="@string/error_field_must_not_be_empty"
+                                                    whatever:testErrorString="@string/error_ip_not_valid"
                                                     android:id="@+id/et_login_address"
                                                     android:layout_width="@dimen/login_width"
                                                     android:layout_height="@dimen/login_height"
@@ -73,7 +77,9 @@
                                                     android:scaleType="center"
                                                     android:src="@drawable/icon_login_address" />
 
-                                                <EditText
+                                                <utils.edittextvalidator.widget.FormEditText
+                                                    whatever:emptyErrorString="@string/error_field_must_not_be_empty"
+                                                    whatever:testType="nocheck"
                                                     android:id="@+id/et_login_user"
                                                     android:layout_width="@dimen/login_width"
                                                     android:layout_height="@dimen/login_height"
@@ -98,7 +104,9 @@
                                                     android:scaleType="center"
                                                     android:src="@drawable/icon_login_user" />
 
-                                                <EditText
+                                                <utils.edittextvalidator.widget.FormEditText
+                                                    whatever:emptyErrorString="@string/error_field_must_not_be_empty"
+                                                    whatever:testType="nocheck"
                                                     android:id="@+id/et_login_psd"
                                                     android:layout_width="@dimen/login_width"
                                                     android:layout_height="@dimen/login_height"

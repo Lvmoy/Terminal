@@ -2,7 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/image_home_background">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:whatever="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/image_home_background"
+    android:descendantFocusability="beforeDescendants"
+    >
 <TextView
     android:id="@+id/fillview"
     android:visibility="visible"
@@ -40,19 +44,24 @@
         android:layout_width="@dimen/home_detail_570_item_width"
         android:layout_height="1dp"/>
 
-    <EditText
-        android:id="@+id/et_toCatIp"
-        android:layout_marginLeft="@dimen/home_detail_edittext_marginleft"
-        android:padding="@dimen/home_detail_edittext_padding"
-        android:layout_marginTop="@dimen/home_detail_edittext_margintop"
-        android:layout_below="@id/ping"
-        android:layout_toRightOf="@id/toSatCatIp"
-        android:gravity="left|center_vertical"
-        android:maxLines="1"
-        android:textColor="@color/colorLightBlack"
-        android:textSize="@dimen/home_detail_ping_textsize"
-        android:layout_width="@dimen/home_detail_edittext_width"
-        android:layout_height="@dimen/home_detail_edittext_height" />
+        <utils.edittextvalidator.widget.FormEditText
+            whatever:testType="ipAddress"
+            whatever:emptyErrorString="@string/error_field_must_not_be_empty"
+            whatever:testErrorString="@string/error_ip_not_valid"
+
+            android:id="@+id/et_toCatIp"
+            android:layout_marginLeft="@dimen/home_detail_edittext_marginleft"
+            android:padding="@dimen/home_detail_edittext_padding"
+            android:layout_marginTop="@dimen/home_detail_edittext_margintop"
+            android:layout_below="@id/ping"
+            android:layout_toRightOf="@id/toSatCatIp"
+            android:gravity="left|center_vertical"
+            android:singleLine="true"
+            android:text="192.168."
+            android:textColor="@color/colorLightBlack"
+            android:textSize="@dimen/home_detail_ping_textsize"
+            android:layout_width="@dimen/home_detail_edittext_width"
+            android:layout_height="@dimen/home_detail_edittext_height" />
     <TextView
         android:id="@+id/bt_catPing"
         android:text="ping"
@@ -86,15 +95,21 @@
         android:layout_width="@dimen/home_detail_570_item_width"
         android:layout_height="1dp"/>
 
-    <EditText
+    <utils.edittextvalidator.widget.FormEditText
+        whatever:testType="ipAddress"
+        whatever:emptyErrorString="@string/error_field_must_not_be_empty"
+        whatever:testErrorString="@string/error_ip_not_valid"
+
         android:id="@+id/et_toWanIp"
         android:layout_marginLeft="@dimen/home_detail_edittext_marginleft"
         android:layout_marginTop="@dimen/home_detail_edittext_margintop"
         android:padding="@dimen/home_detail_edittext_padding"
+        android:text="192.168."
+
         android:layout_below="@id/et_toCatIp"
         android:layout_toRightOf="@id/toWanIp"
         android:gravity="left|center_vertical"
-        android:maxLines="1"
+        android:singleLine="true"
         android:textColor="@color/colorLightBlack"
         android:textSize="@dimen/home_detail_ping_textsize"
         android:layout_width="@dimen/home_detail_edittext_width"
@@ -127,7 +142,11 @@
         android:layout_width="@dimen/home_detail_570_item_width"
         android:layout_height="@dimen/home_detail_570_item_height" />
 
-    <EditText
+    <utils.edittextvalidator.widget.FormEditText
+        whatever:testType="ipAddress"
+        whatever:emptyErrorString="@string/error_field_must_not_be_empty"
+        whatever:testErrorString="@string/error_ip_not_valid"
+
         android:id="@+id/et_toLanIp"
         android:layout_marginLeft="@dimen/home_detail_edittext_marginleft"
         android:layout_marginTop="@dimen/home_detail_edittext_margintop"
@@ -135,7 +154,9 @@
         android:layout_below="@id/et_toWanIp"
         android:layout_toRightOf="@id/toLanIp"
         android:gravity="left|center_vertical"
-        android:maxLines="1"
+        android:singleLine="true"
+        android:text="192.168."
+
         android:textColor="@color/colorLightBlack"
         android:textSize="@dimen/home_detail_ping_textsize"
         android:layout_width="@dimen/home_detail_edittext_width"
@@ -193,8 +214,9 @@
         android:layout_marginTop="@dimen/home_detail_edittext_margintop"
         android:layout_toRightOf="@id/sendhz"
         android:gravity="left|center_vertical"
-        android:maxLines="1"
+        android:singleLine="true"
         android:textColor="@color/colorLightBlack"
+        android:inputType="numberDecimal"
         android:textSize="@dimen/home_detail_ping_textsize"
         android:layout_width="@dimen/home_detail_edittext_width"
         android:layout_height="@dimen/home_detail_edittext_height" />
@@ -222,8 +244,9 @@
         android:layout_marginTop="@dimen/home_detail_edittext_margintop"
         android:layout_toRightOf="@id/sendbps"
         android:gravity="left|center_vertical"
-        android:maxLines="1"
+        android:singleLine="true"
         android:textColor="@color/colorLightBlack"
+        android:inputType="numberDecimal"
         android:textSize="@dimen/home_detail_ping_textsize"
         android:layout_width="@dimen/home_detail_edittext_width"
         android:layout_height="@dimen/home_detail_edittext_height" />
@@ -251,8 +274,9 @@
         android:layout_marginTop="@dimen/home_detail_edittext_margintop"
         android:layout_toRightOf="@id/dbm"
         android:gravity="left|center_vertical"
-        android:maxLines="1"
+        android:singleLine="true"
         android:textColor="@color/colorLightBlack"
+        android:inputType="numberDecimal"
         android:textSize="@dimen/home_detail_ping_textsize"
         android:layout_width="@dimen/home_detail_edittext_width"
         android:layout_height="@dimen/home_detail_edittext_height" />
@@ -309,8 +333,9 @@
         android:padding="@dimen/home_detail_edittext_padding"
         android:layout_toRightOf="@id/receivehz"
         android:gravity="left|center_vertical"
-        android:maxLines="1"
-        android:textColor="@color/colorLightBlack"
+        android:singleLine="true"
+        android:textColor="@color/colorWhite"
+        android:inputType="numberDecimal"
         android:textSize="@dimen/home_detail_ping_textsize"
         android:layout_width="@dimen/home_detail_edittext_width"
         android:layout_height="@dimen/home_detail_edittext_height" />
@@ -333,9 +358,10 @@
         android:padding="@dimen/home_detail_edittext_padding"
         android:layout_toRightOf="@id/receivebps"
         android:gravity="left|center_vertical"
-        android:maxLines="1"
-        android:textColor="@color/colorLightBlack"
+        android:singleLine="true"
+        android:textColor="@color/colorWhite"
         android:textSize="@dimen/home_detail_ping_textsize"
+        android:inputType="numberDecimal"
         android:layout_width="@dimen/home_detail_edittext_width"
         android:layout_height="@dimen/home_detail_edittext_height" />
 
