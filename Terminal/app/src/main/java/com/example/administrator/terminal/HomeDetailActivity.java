@@ -80,16 +80,16 @@ public class HomeDetailActivity extends Activity {
         doPing();
         is570Connecting = getIntent().getBooleanExtra("570state", false);
         if(is570Connecting){
-            doSetOrQuery();
+            doSetOrQuery(dataItems);
         }
         else {
             Crouton.makeText(this, "对不起，570设备没有连接，不支持此项服务。", Style.ALERT).show();
         }
     }
 
-    private void doSetOrQuery() {
+    private void doSetOrQuery(List<DataItem> dataItemList) {
         if(! isDataShowing){
-            doQuery();
+            doAllQuery(dataItemList);
             isDataShowing = true;
         }
         if (viewList != null && viewList.get(3) != null) {
@@ -101,14 +101,21 @@ public class HomeDetailActivity extends Activity {
                 @Override
                 public void onClick(View v) {
 
+                    if(dataItems != null){
+                        Crouton.makeText(HomeDetailActivity.this, dataItems.get(0).toString(), Style.ALERT).show();
+
+                    }else {
+                        Crouton.makeText(HomeDetailActivity.this, "失败！！！！！！！！！！！！！！！！", Style.ALERT).show();
+
+                    }
+
                 }
             });
     }
     }
 
-    private void doQuery() {
-        dataItems = OrderUtils.doQuery(baseUri2);
-        Crouton.makeText(this, dataItems.get(0).toString(), Style.ALERT).show();
+    private void doAllQuery(List<DataItem> dataItemsList) {
+        OrderUtils.doAllQuery(baseUri2, dataItemsList);
     }
 
     private void initUI() {
@@ -192,21 +199,6 @@ public class HomeDetailActivity extends Activity {
             }
         });
 
-//        if (is570Connected()) {
-//            new Timer().schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//                    String baseUri2 = "http://192.168.2.67:8080/test/";
-////                  String baseUri = "http://192.168.2.15:8080/MulityServer2/servlet/";
-////                  String baseUri1 = "https://api.stackexchange.com/2.2/";
-////                  testRetrofit(baseUri2);
-//                    testOrder(baseUri2);
-//
-//                }
-//            }, 3000);
-
-
-//        }
     }
 
     private void doPing() {
