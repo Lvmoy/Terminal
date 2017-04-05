@@ -58,10 +58,11 @@
             android:gravity="left|center_vertical"
             android:singleLine="true"
             android:text="192.168."
-            android:textColor="@color/colorLightBlack"
+            android:textColor="@color/colorWhite"
             android:textSize="@dimen/home_detail_ping_textsize"
             android:layout_width="@dimen/home_detail_edittext_width"
-            android:layout_height="@dimen/home_detail_edittext_height" />
+            android:layout_height="@dimen/home_detail_edittext_height"
+            android:background="@color/colorDarkSlateGray"/>
     <TextView
         android:id="@+id/bt_catPing"
         android:text="ping"
@@ -110,10 +111,11 @@
         android:layout_toRightOf="@id/toWanIp"
         android:gravity="left|center_vertical"
         android:singleLine="true"
-        android:textColor="@color/colorLightBlack"
+        android:textColor="@color/colorWhite"
         android:textSize="@dimen/home_detail_ping_textsize"
         android:layout_width="@dimen/home_detail_edittext_width"
-        android:layout_height="@dimen/home_detail_edittext_height" />
+        android:layout_height="@dimen/home_detail_edittext_height"
+        android:background="@color/colorDarkSlateGray"/>
     <TextView
         android:id="@+id/bt_WanPing"
         android:padding="@dimen/home_detail_ping_padding"
@@ -157,10 +159,11 @@
         android:singleLine="true"
         android:text="192.168."
 
-        android:textColor="@color/colorLightBlack"
+        android:textColor="@color/colorWhite"
         android:textSize="@dimen/home_detail_ping_textsize"
         android:layout_width="@dimen/home_detail_edittext_width"
-        android:layout_height="@dimen/home_detail_edittext_height" />
+        android:layout_height="@dimen/home_detail_edittext_height"
+        android:background="@color/colorDarkSlateGray"/>
     <TextView
         android:id="@+id/bt_LanPing"
         android:text="ping"
@@ -215,11 +218,12 @@
         android:layout_toRightOf="@id/sendhz"
         android:gravity="left|center_vertical"
         android:singleLine="true"
-        android:textColor="@color/colorLightBlack"
+        android:textColor="@color/colorWhite"
         android:inputType="numberDecimal"
         android:textSize="@dimen/home_detail_ping_textsize"
         android:layout_width="@dimen/home_detail_edittext_width"
-        android:layout_height="@dimen/home_detail_edittext_height" />
+        android:layout_height="@dimen/home_detail_edittext_height"
+        android:background="@color/colorDarkSlateGray"/>
     <TextView
         android:id="@+id/sendbps"
         android:layout_below="@id/sendhz"
@@ -245,11 +249,12 @@
         android:layout_toRightOf="@id/sendbps"
         android:gravity="left|center_vertical"
         android:singleLine="true"
-        android:textColor="@color/colorLightBlack"
+        android:textColor="@color/colorWhite"
         android:inputType="numberDecimal"
         android:textSize="@dimen/home_detail_ping_textsize"
         android:layout_width="@dimen/home_detail_edittext_width"
-        android:layout_height="@dimen/home_detail_edittext_height" />
+        android:layout_height="@dimen/home_detail_edittext_height"
+        android:background="@color/colorDarkSlateGray"/>
     <TextView
         android:id="@+id/dbm"
         android:layout_below="@id/sendbps"
@@ -275,11 +280,12 @@
         android:layout_toRightOf="@id/dbm"
         android:gravity="left|center_vertical"
         android:singleLine="true"
-        android:textColor="@color/colorLightBlack"
+        android:textColor="@color/colorWhite"
         android:inputType="numberDecimal"
         android:textSize="@dimen/home_detail_ping_textsize"
         android:layout_width="@dimen/home_detail_edittext_width"
-        android:layout_height="@dimen/home_detail_edittext_height" />
+        android:layout_height="@dimen/home_detail_edittext_height"
+        android:background="@color/colorDarkSlateGray"/>
     <TextView
         android:id="@+id/state"
         android:layout_below="@id/dbm"
@@ -308,6 +314,7 @@
         android:layout_width="@dimen/home_detail_edittext_width"
         android:layout_height="55dp"
         android:entries="@array/selfSwitch"
+        android:background="@color/colorDarkSlateGray"
         />
     <TextView
         android:id="@+id/receivehz"
@@ -338,7 +345,8 @@
         android:inputType="numberDecimal"
         android:textSize="@dimen/home_detail_ping_textsize"
         android:layout_width="@dimen/home_detail_edittext_width"
-        android:layout_height="@dimen/home_detail_edittext_height" />
+        android:layout_height="@dimen/home_detail_edittext_height"
+        android:background="@color/colorDarkSlateGray"/>
     <TextView
         android:id="@+id/receivebps"
         android:layout_below="@id/receivehz"
@@ -363,7 +371,8 @@
         android:textSize="@dimen/home_detail_ping_textsize"
         android:inputType="numberDecimal"
         android:layout_width="@dimen/home_detail_edittext_width"
-        android:layout_height="@dimen/home_detail_edittext_height" />
+        android:layout_height="@dimen/home_detail_edittext_height"
+        android:background="@color/colorDarkSlateGray"/>
 
     <TextView
         android:id="@+id/bt_ok"

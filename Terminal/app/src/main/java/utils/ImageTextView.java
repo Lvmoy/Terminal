@@ -103,6 +103,28 @@ public class ImageTextView extends android.support.v7.widget.AppCompatTextView {
         invalidate();
     }
 
+    /**
+     * 设置右侧图片并重绘
+     *
+     * @param
+     */
+    public void setDrawableRight(Drawable drawable) {
+        this.mDrawable = drawable;
+        this.mPosition = 3;
+        invalidate();
+    }
+
+    /**
+     * 设置右侧图片并重绘
+     *
+     * @param
+     */
+    public void setDrawableRight(int drawableRes, Context context) {
+        this.mDrawable = context.getResources().getDrawable(drawableRes);
+        this.mPosition = 3;
+        invalidate();
+    }
+
     public Drawable getmDrawable() {
         return mDrawable;
     }

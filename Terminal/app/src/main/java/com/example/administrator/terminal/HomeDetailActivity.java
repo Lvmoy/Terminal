@@ -16,6 +16,8 @@ import android.widget.TextView;
 
 import com.github.aurae.retrofit2.LoganSquareConverterFactory;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -28,8 +30,7 @@ import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 import devlight.io.library.ntb.NavigationTabBar;
 import interfaces.OrderService;
-import interfaces.TestService;
-import pojo.Response;
+import pojo.order.DataItem;
 import pojo.order.Order;
 import pojo.order.Result;
 import retrofit2.Call;
@@ -59,12 +60,17 @@ public class HomeDetailActivity extends Activity {
     private TextView btWanPing;
     private TextView btLanPing;
 
+    private TextView btOk;
+
     private View currentView = null;
     //    private HashMap<Integer, View > viewHashMap = new HashMap<>();
     private HomeViewPagerAdapter viewPagerAdapter;
     private List<View> viewList = new ArrayList<>();
+    private List<DataItem> dataItems  = new ArrayList<>();
 
     private boolean is570Connecting = false;
+    private boolean isDataShowing = false;
+    private static final String baseUri2 = "http://192.168.2.67:8080/test/";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +78,37 @@ public class HomeDetailActivity extends Activity {
         ButterKnife.bind(this);
         initUI();
         doPing();
+        is570Connecting = getIntent().getBooleanExtra("570state", false);
+        if(is570Connecting){
+            doSetOrQuery();
+        }
+        else {
+            Crouton.makeText(this, "对不起，570设备没有连接，不支持此项服务。", Style.ALERT).show();
+        }
+    }
+
+    private void doSetOrQuery() {
+        if(! isDataShowing){
+            doQuery();
+            isDataShowing = true;
+        }
+        if (viewList != null && viewList.get(3) != null) {
+
+            View view = viewList.get(3);
+            btOk = (TextView) view.findViewById(R.id.bt_ok);
+
+            btOk.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+    }
+    }
+
+    private void doQuery() {
+        dataItems = OrderUtils.doQuery(baseUri2);
+        Crouton.makeText(this, dataItems.get(0).toString(), Style.ALERT).show();
     }
 
     private void initUI() {
@@ -155,31 +192,20 @@ public class HomeDetailActivity extends Activity {
             }
         });
 
-        if (is570Connected()) {
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    String baseUri2 = "http://192.168.2.55:8080/test/";
-                    String baseUri = "http://192.168.2.15:8080/MulityServer2/servlet/";
-                    String baseUri1 = "https://api.stackexchange.com/2.2/";
-//                testRetrofit(baseUri2);
-                    testOrder(baseUri2);
-
-                }
-            }, 3000);
-
-
-        }
-//        EditText etToCatIp = (EditText) findViewById(R.id.et_toCatIp);
-//        String toCatIp = etToCatIp.getText().toString().trim();
-
-//            findViewById(R.id.bt_catPing).setOnClickListener(new View.OnClickListener() {
+//        if (is570Connected()) {
+//            new Timer().schedule(new TimerTask() {
 //                @Override
-//                public void onClick(View v) {
-
-
+//                public void run() {
+//                    String baseUri2 = "http://192.168.2.67:8080/test/";
+////                  String baseUri = "http://192.168.2.15:8080/MulityServer2/servlet/";
+////                  String baseUri1 = "https://api.stackexchange.com/2.2/";
+////                  testRetrofit(baseUri2);
+//                    testOrder(baseUri2);
+//
 //                }
-//            });
+//            }, 3000);
+
+
 //        }
     }
 
@@ -199,6 +225,8 @@ public class HomeDetailActivity extends Activity {
             btCatPing = (TextView) view.findViewById(R.id.bt_catPing);
             btWanPing = (TextView) view.findViewById(R.id.bt_WanPing);
             btLanPing = (TextView) view.findViewById(R.id.bt_LanPing);
+
+
 
             etToCatIp.setFocusable(true);
             etToCatIp.requestFocus();
@@ -253,7 +281,7 @@ public class HomeDetailActivity extends Activity {
                             Crouton.makeText(HomeDetailActivity.this, "恭喜，网络通畅!", Style.INFO).show();
                         }else
                         {
-                            Crouton.makeText(HomeDetailActivity.this, "欧欧，网络不通!请检查地址", Style.ALERT).show();
+                            Crouton.makeText(HomeDetailActivity.this, "对不起，网络不通!请检查地址", Style.ALERT).show();
 
                         }
                     }
@@ -268,7 +296,7 @@ public class HomeDetailActivity extends Activity {
                             Crouton.makeText(HomeDetailActivity.this, "恭喜，网络通畅!", Style.INFO).show();
                         }else
                         {
-                            Crouton.makeText(HomeDetailActivity.this, "欧欧，网络不通!请检查地址", Style.ALERT).show();
+                            Crouton.makeText(HomeDetailActivity.this, "对不起，，网络不通!请检查地址", Style.ALERT).show();
 
                         }
                     }
@@ -283,7 +311,7 @@ public class HomeDetailActivity extends Activity {
                             Crouton.makeText(HomeDetailActivity.this, "恭喜，网络通畅!", Style.INFO).show();
                         }else
                         {
-                            Crouton.makeText(HomeDetailActivity.this, "欧欧，网络不通!请检查地址", Style.ALERT).show();
+                            Crouton.makeText(HomeDetailActivity.this, "对不起，网络不通!请检查地址", Style.ALERT).show();
 
                         }
                     }
@@ -299,7 +327,7 @@ public class HomeDetailActivity extends Activity {
     }
 
     private boolean is570Connected() {
-        return true;
+        return is570Connecting;
     }
 
     private void testOrder(String baseUri2) {
@@ -348,44 +376,6 @@ public class HomeDetailActivity extends Activity {
         });
 
 
-    }
-
-    private void testRetrofit(String baseUri1) {
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .addConverterFactory(LoganSquareConverterFactory.create())
-                .baseUrl(baseUri1)
-                .build();
-
-        TestService testService = retrofit.create(TestService.class);
-        Call<Response> call = testService.getAnswers();
-        call.enqueue(new Callback<Response>() {
-            @Override
-            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                String extraString;
-                Intent intent = new Intent(HomeDetailActivity.this, ShowActivity.class);
-                if (response.isSuccessful()) {
-                    if (response.body() != null) {
-                        extraString = response.body().getItems().toString();
-                    } else {
-                        extraString = "repose.body() == null";
-                    }
-
-                } else {
-                    extraString = response.errorBody().toString();
-                }
-
-                intent.putExtra("json", extraString);
-                startActivity(intent);
-            }
-
-            @Override
-            public void onFailure(Call<Response> call, Throwable t) {
-                Intent intent = new Intent(HomeDetailActivity.this, ShowActivity.class);
-                intent.putExtra("json", "error nothing received :" + t.toString());
-                startActivity(intent);
-            }
-        });
     }
 
     @Override
