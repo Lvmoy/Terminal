@@ -219,7 +219,6 @@
         android:gravity="left|center_vertical"
         android:singleLine="true"
         android:textColor="@color/colorWhite"
-        android:inputType="numberDecimal"
         android:textSize="@dimen/home_detail_ping_textsize"
         android:layout_width="@dimen/home_detail_edittext_width"
         android:layout_height="@dimen/home_detail_edittext_height"
@@ -241,7 +240,7 @@
         android:layout_height="1dp"/>
 
     <EditText
-        android:id="@+id/et_bps"
+        android:id="@+id/et_sendbps"
         android:layout_marginLeft="@dimen/home_detail_edittext_marginleft"
         android:layout_below="@id/et_sendHz"
         android:padding="@dimen/home_detail_edittext_padding"
@@ -250,7 +249,6 @@
         android:gravity="left|center_vertical"
         android:singleLine="true"
         android:textColor="@color/colorWhite"
-        android:inputType="numberDecimal"
         android:textSize="@dimen/home_detail_ping_textsize"
         android:layout_width="@dimen/home_detail_edittext_width"
         android:layout_height="@dimen/home_detail_edittext_height"
@@ -274,14 +272,13 @@
     <EditText
         android:id="@+id/et_dbm"
         android:layout_marginLeft="@dimen/home_detail_edittext_marginleft"
-        android:layout_below="@id/et_bps"
+        android:layout_below="@id/et_sendbps"
         android:padding="@dimen/home_detail_edittext_padding"
         android:layout_marginTop="@dimen/home_detail_edittext_margintop"
         android:layout_toRightOf="@id/dbm"
         android:gravity="left|center_vertical"
         android:singleLine="true"
         android:textColor="@color/colorWhite"
-        android:inputType="numberDecimal"
         android:textSize="@dimen/home_detail_ping_textsize"
         android:layout_width="@dimen/home_detail_edittext_width"
         android:layout_height="@dimen/home_detail_edittext_height"
@@ -342,7 +339,6 @@
         android:gravity="left|center_vertical"
         android:singleLine="true"
         android:textColor="@color/colorWhite"
-        android:inputType="numberDecimal"
         android:textSize="@dimen/home_detail_ping_textsize"
         android:layout_width="@dimen/home_detail_edittext_width"
         android:layout_height="@dimen/home_detail_edittext_height"
@@ -369,7 +365,6 @@
         android:singleLine="true"
         android:textColor="@color/colorWhite"
         android:textSize="@dimen/home_detail_ping_textsize"
-        android:inputType="numberDecimal"
         android:layout_width="@dimen/home_detail_edittext_width"
         android:layout_height="@dimen/home_detail_edittext_height"
         android:background="@color/colorDarkSlateGray"/>

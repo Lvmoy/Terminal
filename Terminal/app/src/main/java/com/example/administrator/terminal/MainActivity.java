@@ -63,8 +63,9 @@ public class MainActivity extends Activity {
         setContentView(R.layout.layout_home);
         ButterKnife.bind(this);
         Crouton.makeText(this, "登录成功！欢迎您", Style.INFO).show();
-        is570Connecting = OrderUtils.do570Ping(baseUri);
-        change570State(is570Connecting);
+        while(!is570Connecting){
+            is570Connecting = OrderUtils.do570Ping(baseUri);
+        }
     }
 
     @Override
@@ -72,6 +73,13 @@ public class MainActivity extends Activity {
         super.onResume();
         is570Connecting = OrderUtils.do570Ping(baseUri);
         change570State(is570Connecting);
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        is570Connecting = false;
     }
 
     private void change570State(boolean isConnect) {

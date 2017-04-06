@@ -1,14 +1,17 @@
 package com.example.administrator.terminal;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -60,6 +63,11 @@ public class HomeDetailActivity extends Activity {
     private TextView btWanPing;
     private TextView btLanPing;
 
+    private EditText etSendHz;
+    private EditText etSendBps;
+    private EditText etReceiveHz;
+    private EditText etReceiveBps;
+
     private TextView btOk;
 
     private View currentView = null;
@@ -70,6 +78,7 @@ public class HomeDetailActivity extends Activity {
 
     private boolean is570Connecting = false;
     private boolean isDataShowing = false;
+    private boolean isChildThreadRunning = true;
     private static final String baseUri2 = "http://192.168.2.67:8080/test/";
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,38 +89,63 @@ public class HomeDetailActivity extends Activity {
         doPing();
         is570Connecting = getIntent().getBooleanExtra("570state", false);
         if(is570Connecting){
-            doSetOrQuery(dataItems);
+            Thread thread  = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    doSetOrQuery(dataItems);
+                }
+            });
+            thread.start();
         }
         else {
             Crouton.makeText(this, "对不起，570设备没有连接，不支持此项服务。", Style.ALERT).show();
         }
+
+        doOpenQuery();
+
+    }
+
+    private void doOpenQuery() {
+        while (!isChildThreadRunning && !isDataShowing){
+            if (viewList != null && viewList.get(3) != null) {
+
+                View view = viewList.get(3);
+//                btOk = (TextView) view.findViewById(R.id.bt_ok);
+                etSendHz = (EditText) view.findViewById(R.id.et_sendHz);
+                etSendBps = (EditText) view.findViewById(R.id.et_sendbps);
+                etReceiveHz = (EditText) view.findViewById(R.id.et_receivehz);
+                etReceiveBps = (EditText) view.findViewById(R.id.et_receivebps);
+
+//                btOk.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+                        if(dataItems != null){
+                            etSendHz.setText(dataItems.get(0).getValue());
+                            etSendBps.setText(dataItems.get(1).getValue());
+                            etReceiveHz.setText(dataItems.get(2).getValue());
+                            etReceiveBps.setText(dataItems.get(3).getValue());
+                        }else {
+                            Crouton.makeText(HomeDetailActivity.this, "连接570设备错误!", Style.ALERT).show();
+                        }
+//                    }
+//                });
+            }
+            isDataShowing = true;
+        }
     }
 
     private void doSetOrQuery(List<DataItem> dataItemList) {
+        dataItemList.clear();
         if(! isDataShowing){
             doAllQuery(dataItemList);
-            isDataShowing = true;
-        }
-        if (viewList != null && viewList.get(3) != null) {
-
-            View view = viewList.get(3);
-            btOk = (TextView) view.findViewById(R.id.bt_ok);
-
-            btOk.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    if(dataItems != null){
-                        Crouton.makeText(HomeDetailActivity.this, dataItems.get(0).toString(), Style.ALERT).show();
-
-                    }else {
-                        Crouton.makeText(HomeDetailActivity.this, "失败！！！！！！！！！！！！！！！！", Style.ALERT).show();
-
-                    }
-
+            if(dataItemList != null){
+                if(dataItemList.size() > 0){
+                    isChildThreadRunning = false;
                 }
-            });
-    }
+
+            }
+
+        }
     }
 
     private void doAllQuery(List<DataItem> dataItemsList) {
@@ -266,13 +300,29 @@ public class HomeDetailActivity extends Activity {
             btCatPing.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Dialog dialog = new Dialog(HomeDetailActivity.this, R.style.UserAvatarDialog);
+                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    TextView textView = new TextView(HomeDetailActivity.this);
+                    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
+                    textView.setTextColor(getResources().getColor(R.color.colorOrange));
+                    textView.setText("努力ping中，请稍等...");
+                    dialog.setContentView(textView);
+                    dialog.show();
                     if (etToCatIp.testValidity()) {
                         String catIp = etToCatIp.getText().toString();
                         if(OrderUtils.doCatPing(catIp)){
+                            String result = OrderUtils.doPingForInfo(catIp);
+                            dialog.hide();
+                            textView.setTextColor(getResources().getColor(R.color.colorLightWhite));
+                            textView.setText(result);
+                            dialog.show();
                             Crouton.makeText(HomeDetailActivity.this, "恭喜，网络通畅!", Style.INFO).show();
                         }else
                         {
+                            String result = OrderUtils.doPingForInfo(catIp);
+
+                            textView.setText(result);
+                            dialog.show();
                             Crouton.makeText(HomeDetailActivity.this, "对不起，网络不通!请检查地址", Style.ALERT).show();
 
                         }
@@ -322,57 +372,64 @@ public class HomeDetailActivity extends Activity {
         return is570Connecting;
     }
 
-    private void testOrder(String baseUri2) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUri2)
-                .addConverterFactory(LoganSquareConverterFactory.create())
-                .build();
-
-        Order order = new Order();
-        order.setId(1);
-        order.setMachineType(2);
-        order.setOrderName("query iso xx");
-        order.setOrderType(2);
-        order.setIp("172.22.1.22");
-        order.setMachine_port("iso.3.6.1.2.1.4.20.1.1.172.22.1.22");
-
-        OrderService orderService = retrofit.create(OrderService.class);
-        Call<Result> call = orderService.reportOrder(order);
-
-        call.enqueue(new Callback<Result>() {
-            @Override
-            public void onResponse(Call<Result> call, retrofit2.Response<Result> response) {
-                String extraString;
-                Intent intent = new Intent(HomeDetailActivity.this, ShowActivity.class);
-                if (response.isSuccessful()) {
-                    if (response.body() != null) {
-                        extraString = response.body().toString();
-                    } else {
-                        extraString = "repose.body() == null";
-                    }
-
-                } else {
-                    extraString = response.errorBody().toString();
-                }
-
-                intent.putExtra("json", extraString);
-                startActivity(intent);
-            }
-
-            @Override
-            public void onFailure(Call<Result> call, Throwable t) {
-                Intent intent = new Intent(HomeDetailActivity.this, ShowActivity.class);
-                intent.putExtra("json", "error nothing received :" + t.toString());
-                startActivity(intent);
-            }
-        });
-
-
-    }
+//    private void testOrder(String baseUri2) {
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl(baseUri2)
+//                .addConverterFactory(LoganSquareConverterFactory.create())
+//                .build();
+//
+//        Order order = new Order();
+//        order.setId(1);
+//        order.setMachineType(2);
+//        order.setOrderName("query iso xx");
+//        order.setOrderType(2);
+//        order.setIp("172.22.1.22");
+//        order.setMachine_port("iso.3.6.1.2.1.4.20.1.1.172.22.1.22");
+//
+//        OrderService orderService = retrofit.create(OrderService.class);
+//        Call<Result> call = orderService.reportOrder(order);
+//
+//        call.enqueue(new Callback<Result>() {
+//            @Override
+//            public void onResponse(Call<Result> call, retrofit2.Response<Result> response) {
+//                String extraString;
+//                Intent intent = new Intent(HomeDetailActivity.this, ShowActivity.class);
+//                if (response.isSuccessful()) {
+//                    if (response.body() != null) {
+//                        extraString = response.body().toString();
+//                    } else {
+//                        extraString = "repose.body() == null";
+//                    }
+//
+//                } else {
+//                    extraString = response.errorBody().toString();
+//                }
+//
+//                intent.putExtra("json", extraString);
+//                startActivity(intent);
+//            }
+//
+//            @Override
+//            public void onFailure(Call<Result> call, Throwable t) {
+//                Intent intent = new Intent(HomeDetailActivity.this, ShowActivity.class);
+//                intent.putExtra("json", "error nothing received :" + t.toString());
+//                startActivity(intent);
+//            }
+//        });
+//
+//
+//    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         Crouton.clearCroutonsForActivity(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isDataShowing = false;
+        finish();
     }
 }

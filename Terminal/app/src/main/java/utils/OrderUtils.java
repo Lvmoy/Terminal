@@ -4,14 +4,19 @@ import android.util.Log;
 
 import com.github.aurae.retrofit2.LoganSquareConverterFactory;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import interfaces.OrderService;
+import okhttp3.OkHttpClient;
 import pojo.order.DataItem;
 import pojo.order.Order;
 import pojo.order.Result;
@@ -27,6 +32,12 @@ import retrofit2.Retrofit;
 public class OrderUtils {
     private static boolean isConnect = true;
     private static List<DataItem> dataList = new ArrayList<>();
+
+    private static final OkHttpClient client = new OkHttpClient.Builder().
+            connectTimeout(60, TimeUnit.SECONDS).
+            readTimeout(60, TimeUnit.SECONDS).
+            writeTimeout(60, TimeUnit.SECONDS).build();
+
     public static boolean doCatPing(String string){
         Runtime runtime = Runtime.getRuntime();
         Process process = null;
@@ -52,10 +63,51 @@ public class OrderUtils {
         return connected;
     }
 
+    public static String doPingForInfo(String ip){
+        Runtime runtime = Runtime.getRuntime();
+        Process process = null;
+        StringBuilder result = null;
+        String resultStr = null;
+        String cmdString = "/system/bin/ping -c " + 4 + " " + ip;
+        try {
+            process = runtime.exec(cmdString);
+            result = new StringBuilder();
+            BufferedInputStream inputStream = new BufferedInputStream(process.getInputStream());
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            String line = null;
+            while ((line = reader.readLine()) != null){
+                result.append(line + "\r\n");
+            }
+            resultStr = result.toString();
+
+            try {
+                process.waitFor();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            inputStream.close();
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        int i = process.exitValue();  //接收执行完毕的返回值ss
+        if (i == 0) {
+            Log.d("debug", "执行完成.");
+        } else {
+            Log.d("debug", "执行失败.");
+        }
+
+        process.destroy();
+        process = null;
+
+        return resultStr;
+    }
     public static boolean do570Ping(String ipStr){
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(LoganSquareConverterFactory.create())
                 .baseUrl(ipStr)
+                .client(client)
                 .build();
 
         OrderService orderService =  retrofit.create(OrderService.class);
@@ -93,54 +145,21 @@ public class OrderUtils {
     }
 
     public static void doAllQuery(String baseUri, final List<DataItem> dataItems) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUri)
-                .addConverterFactory(LoganSquareConverterFactory.create())
-                .build();
 
-
-        Order order = new Order();
-        order.setId(1);
-        order.setMachineType(2);
-        order.setOrderName("query 172.22.1.22 iso.3.6.1.4.1.6247.85");
-        order.setOrderType(1);
-        order.setIp("172.22.1.22");
-        order.setMachine_port("iso.3.6.1.4.1.6247.85");
-
-        OrderService orderService = retrofit.create(OrderService.class);
-        Call<Result> call = orderService.reportOrder(order);
-        call.enqueue(new Callback<Result>() {
-            @Override
-            public void onResponse(Call<Result> call, retrofit2.Response<Result> response) {
-                String extraString;
-                if (response.isSuccessful()) {
-                    if (response.body() != null) {
-                        extraString = response.body().toString();
-                        dealData(extraString, dataItems);
-                    } else {
-                        Log.d("debug", "Data repose: null");
-                    }
-                } else {
-                    Log.d("debug", "Data repose: null" + response.errorBody().toString());
+            if(dataItems != null){
+                if( dataItems.size() == 0){
+                    doQueueQuery(baseUri,dataItems);
                 }
-            }
-            @Override
-            public void onFailure(Call<Result> call, Throwable t) {
-                Log.d("debug", "Data repose: null" + t.getStackTrace().toString());
-            }
-        });
-
-        if(!call.isExecuted() || !call.isCanceled()){
-            if(dataItems == null){
+            }else {
                 doQueueQuery(baseUri,dataItems);
             }
 
-        }
     }
 
     private static void doQueueQuery(String baseUri, List<DataItem> dataItems) {
-        Order[] orders = new Order[]{};
+        Order[] orders = new Order[4];
         //sendHz
+        orders[0] = new Order();
         orders[0].setId(0);
         orders[0].setIp("172.22.1.22");
         orders[0].setMachine_port("iso.3.6.1.4.1.6247.85.1.2.2.1.0");
@@ -148,6 +167,7 @@ public class OrderUtils {
         orders[0].setOrderName("request_sendHz");
         orders[0].setOrderType(2);
         //sendBps
+        orders[1] = new Order();
         orders[1].setId(0);
         orders[1].setIp("172.22.1.22");
         orders[1].setMachine_port("iso.3.6.1.4.1.6247.85.1.2.2.2.0");
@@ -155,6 +175,7 @@ public class OrderUtils {
         orders[1].setOrderName("request_sendBps");
         orders[1].setOrderType(2);
         //receiveHz
+        orders[2] = new Order();
         orders[2].setId(0);
         orders[2].setIp("172.22.1.22");
         orders[2].setMachine_port("iso.3.6.1.4.1.6247.85.1.2.3.1.0");
@@ -162,6 +183,7 @@ public class OrderUtils {
         orders[2].setOrderName("request_receiveHz");
         orders[2].setOrderType(2);
         //receiveBps
+        orders[3] = new Order();
         orders[3].setId(0);
         orders[3].setIp("172.22.1.22");
         orders[3].setMachine_port("iso.3.6.1.4.1.6247.85.1.2.3.2.0");
@@ -178,61 +200,115 @@ public class OrderUtils {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUri)
                 .addConverterFactory(LoganSquareConverterFactory.create())
+                .client(client)
                 .build();
 
         OrderService orderService = retrofit.create(OrderService.class);
         Call<Result> call = orderService.reportOrder(order);
-
-        call.enqueue(new Callback<Result>() {
-            @Override
-            public void onResponse(Call<Result> call, retrofit2.Response<Result> response) {
-                String extraString;
-                if (response.isSuccessful()) {
-                    if (response.body() != null) {
-                        extraString = response.body().toString();
-                        if(extraString != null || !extraString.equals("")){
-                            dealSingleData(i ,extraString, dataItems);
-                        }
-                    } else {
-                        extraString = "repose.body() == null";
+        try {
+            retrofit2.Response<Result> response = call.execute();
+            String extraString;
+            if (response.isSuccessful()) {
+                if (response.body() != null) {
+                    extraString = response.body().toString();
+                    if(extraString != null || !extraString.equals("")){
+                        dealSingleData(i ,extraString, dataItems);
                     }
-
                 } else {
-                    extraString = response.errorBody().toString();
+                    extraString = "repose.body() == null";
                 }
 
+            } else {
+                extraString = response.errorBody().toString();
             }
-
-            @Override
-            public void onFailure(Call<Result> call, Throwable t) {
-
-            }
-        });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        call.enqueue(new Callback<Result>() {
+//            @Override
+//            public void onResponse(Call<Result> call, retrofit2.Response<Result> response) {
+//
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<Result> call, Throwable t) {
+//
+//            }
+//        });
     }
 
     private static void dealSingleData(int i, String extraString, List<DataItem> dataItems) {
         HashMap<String, String> tvMap = new HashMap<>();
-        String patternStr = "(iso\\S+)(=\\s\\w{6,9})(\\w+\\n)";
-        Pattern pattern = Pattern.compile(patternStr);
-        Matcher matcher = pattern.matcher(extraString);
+        String patternStr = "(iso\\S+)(=\\s\\w{6,9})(:\\s.*\\d{6,9})";
+        String[] paS = new String[]{"iso\\S+", "=\\s\\w{6,9}", ":\\s.*\\d{6,9}"};
 
-        if(matcher.groupCount() > 0 && matcher.groupCount() >=4){
-            String iso = matcher.group(1);
-            String temp = matcher.group(2);
-            int len = temp.length();
-            String type = temp.substring(2, len -1);
+        String iso = null;
+        String temp = null;
+        String type = null;
+        String value = null;
 
-            Log.d("debug", "type" + type);
-            Log.d("debug", "temp" + temp);
-            Log.d("debug", "iso" + iso);
-
-            Log.d("debug", "matcher.group(3)" + matcher.group(3));
-
-            tvMap.put(type, matcher.group(3));
-
-            dataItems.add(i, new DataItem(i, "order", type, tvMap.get(type), iso, "172.22.1.22"));
+        for (int j = 0; j < paS.length; j++) {
+            Pattern pattern = Pattern.compile(paS[j]);
+            Matcher matcher = pattern.matcher(extraString);
+            for (int h = 0; h < paS.length; h++) {
+                if (matcher.find()) {
+                    switch (j) {
+                        case 0:
+                            iso = matcher.group();
+                            break;
+                        case 1:
+                            temp = matcher.group();
+                            int len = temp.length();
+                            type = temp.substring(2, len);
+                            break;
+                        case 2:
+                            temp = matcher.group();
+                            int length = temp.length();
+                            value = temp.substring(2, length);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
         }
-    }
+//                    Log.d("debug", "type" + type);
+//                    Log.d("debug", "temp" + temp);
+//                    Log.d("debug", "iso" + iso);
+//
+//                    Log.d("debug", "matcher.group(3)s" + matcher.group(3));
+
+//                tvMap.put(type, value);
+
+                    dataItems.add(i, new DataItem(i, "order", type, value, iso, "172.22.1.22"));
+        }
+//        Pattern pattern = Pattern.compile(patternStr);
+//        Matcher matcher = pattern.matcher(extraString);
+//
+//        if(matcher.groupCount() >=3){
+//            int a = matcher.groupCount();
+//            if (matcher.lookingAt()){
+//                String iso = matcher.group(1);
+//                String temp = matcher.group(2);
+//                int len = temp.length();
+//                String type = temp.substring(2, len - 1);
+//                temp = matcher.group(3);
+//                len = temp.length();
+//                String value = temp.substring(2, len - 1);
+//
+//                Log.d("debug", "type" + type);
+//                Log.d("debug", "temp" + temp);
+//                Log.d("debug", "iso" + iso);
+//
+//                Log.d("debug", "matcher.group(3)" + matcher.group(3));
+//
+////                tvMap.put(type, value);
+//
+//                dataItems.add(i, new DataItem(i, "order", type, value, iso, "172.22.1.22"));
+//            }
+//
+//        }
 
     private static void dealData(String extraString, List<DataItem> itemList) {
         HashMap<Integer, String> patternMap = new HashMap<>();
@@ -250,7 +326,7 @@ public class OrderUtils {
         //receive bps
         patternMap.put(4, "iso.3.6.1.4.1.6247.85.1.2.3.2.0\\s=\\s\\b\\w{6,9}\\b:\\s.+");
 
-        if(extraString != null || !extraString .equals(""))
+        if(extraString != null && !extraString .equals(""))
         {
         for(int i = 0; i < dataCount; i++){
             patternStr = patternMap.get(i);
