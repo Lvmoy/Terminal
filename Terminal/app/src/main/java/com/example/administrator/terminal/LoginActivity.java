@@ -60,9 +60,9 @@ public class LoginActivity extends Activity {
         FormEditText[] allFields	= { etLoginAddress, etLoginUser ,etLoginPsd };
         boolean allValid = true;
         boolean isIpValid = true;
-        isIpValid = allFields[0].testValidity();
+        isIpValid = allFields[0].ztestValidity();
         for (FormEditText field: allFields) {
-            allValid = field.testValidity() && allValid;
+            allValid = field.ztestValidity() && allValid;
         }
 
         if (allValid) {

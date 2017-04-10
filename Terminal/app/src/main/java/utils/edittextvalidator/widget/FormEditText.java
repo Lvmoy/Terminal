@@ -63,7 +63,7 @@ public class FormEditText extends android.support.v7.widget.AppCompatEditText {
      *
      * @return true if the validity passes false otherwise.
      */
-    public boolean testValidity() {
+    public boolean ztestValidity() {
         return editTextValidator.testValidity();
     }
 

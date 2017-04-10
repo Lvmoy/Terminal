@@ -111,7 +111,7 @@ public class OrderUtils {
                 .build();
 
         OrderService orderService =  retrofit.create(OrderService.class);
-        Call<Result> call = orderService.reportOrder(new Order(2, 2, 5, "570 PING", "172.22.1.22", ""));
+        Call<Result> call = orderService.reportOrder(new Order(2, 2, 5, "570 PING", "172.22.1.22", "", "" ,""));
         call.enqueue(new Callback<Result>() {
             @Override
             public void onResponse(Call<Result> call, retrofit2.Response<Result> response) {
@@ -144,19 +144,12 @@ public class OrderUtils {
 
     }
 
-    public static void doAllQuery(String baseUri, final List<DataItem> dataItems) {
-
-            if(dataItems != null){
-                if( dataItems.size() == 0){
-                    doQueueQuery(baseUri,dataItems);
-                }
-            }else {
-                doQueueQuery(baseUri,dataItems);
-            }
-
+    public static boolean doAllQuery(String baseUri, final List<DataItem> dataItems) {
+                return doQueueQuery(baseUri,dataItems);
     }
 
-    private static void doQueueQuery(String baseUri, List<DataItem> dataItems) {
+    private static boolean doQueueQuery(String baseUri, List<DataItem> dataItems) {
+        boolean flag = false;
         Order[] orders = new Order[4];
         //sendHz
         orders[0] = new Order();
@@ -166,6 +159,8 @@ public class OrderUtils {
         orders[0].setMachineType(2);
         orders[0].setOrderName("request_sendHz");
         orders[0].setOrderType(2);
+        orders[0].setType("");
+        orders[0].setValue("");
         //sendBps
         orders[1] = new Order();
         orders[1].setId(0);
@@ -174,6 +169,8 @@ public class OrderUtils {
         orders[1].setMachineType(2);
         orders[1].setOrderName("request_sendBps");
         orders[1].setOrderType(2);
+        orders[1].setType("");
+        orders[1].setValue("");
         //receiveHz
         orders[2] = new Order();
         orders[2].setId(0);
@@ -182,6 +179,8 @@ public class OrderUtils {
         orders[2].setMachineType(2);
         orders[2].setOrderName("request_receiveHz");
         orders[2].setOrderType(2);
+        orders[2].setType("");
+        orders[2].setValue("");
         //receiveBps
         orders[3] = new Order();
         orders[3].setId(0);
@@ -190,13 +189,17 @@ public class OrderUtils {
         orders[3].setMachineType(2);
         orders[3].setOrderName("request_receiveBps");
         orders[3].setOrderType(2);
+        orders[3].setType("");
+        orders[3].setValue("");
 
         for(int i = 0; i < orders.length; i ++){
-            doSingleQuery(i, baseUri, orders[i], dataItems);
+            flag = doSingleQuery(i, baseUri, orders[i], dataItems);
         }
+        return flag;
     }
 
-    private static void doSingleQuery(final int i, String baseUri, Order order, final List<DataItem> dataItems) {
+    private static boolean doSingleQuery(final int i, String baseUri, Order order, final List<DataItem> dataItems) {
+        boolean flag = false;
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(baseUri)
                 .addConverterFactory(LoganSquareConverterFactory.create())
@@ -212,7 +215,10 @@ public class OrderUtils {
                 if (response.body() != null) {
                     extraString = response.body().toString();
                     if(extraString != null || !extraString.equals("")){
-                        dealSingleData(i ,extraString, dataItems);
+                        if(!dealSingleData(i ,extraString, dataItems)){
+                        }else {
+                            flag = true;
+                        }
                     }
                 } else {
                     extraString = "repose.body() == null";
@@ -224,21 +230,41 @@ public class OrderUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        call.enqueue(new Callback<Result>() {
-//            @Override
-//            public void onResponse(Call<Result> call, retrofit2.Response<Result> response) {
-//
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Result> call, Throwable t) {
-//
-//            }
-//        });
+        return flag;
     }
 
-    private static void dealSingleData(int i, String extraString, List<DataItem> dataItems) {
+    public static void doQueueEdit(String baseUri, List<DataItem> dataList){
+        if(dataList != null && dataList.size() > 0){
+
+            List<Order> orders = new ArrayList<>();
+            for(int i = 0; i < dataList.size(); i++){
+                orders.add(i, new Order(dataList.get(i).getId(), 2, 4, dataList.get(i).getName(), dataList.get(i).getIp(),
+                        dataList.get(i).getIso(), dataList.get(i).getType(), dataList.get(i).getValue()));
+
+            }
+
+            for (int j = 0; j < orders.size(); j ++){
+                doSingleEdit(baseUri, orders.get(j));
+            }
+        }
+    }
+
+    private static void doSingleEdit(String baseUri, Order order) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUri)
+                .addConverterFactory(LoganSquareConverterFactory.create())
+                .client(client)
+                .build();
+
+        OrderService orderService = retrofit.create(OrderService.class);
+        Call<Result> call = orderService.reportOrder(order);
+        try {
+            call.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+        private static boolean dealSingleData(int i, String extraString, List<DataItem> dataItems) {
         HashMap<String, String> tvMap = new HashMap<>();
         String patternStr = "(iso\\S+)(=\\s\\w{6,9})(:\\s.*\\d{6,9})";
         String[] paS = new String[]{"iso\\S+", "=\\s\\w{6,9}", ":\\s.*\\d{6,9}"};
@@ -273,42 +299,14 @@ public class OrderUtils {
                 }
             }
         }
-//                    Log.d("debug", "type" + type);
-//                    Log.d("debug", "temp" + temp);
-//                    Log.d("debug", "iso" + iso);
-//
-//                    Log.d("debug", "matcher.group(3)s" + matcher.group(3));
 
-//                tvMap.put(type, value);
-
-                    dataItems.add(i, new DataItem(i, "order", type, value, iso, "172.22.1.22"));
+        dataItems.add(i, new DataItem(i, "order", type, value, iso, "172.22.1.22"));
+        if(i == 3){
+            return true;
+        }else {
+            return false;
         }
-//        Pattern pattern = Pattern.compile(patternStr);
-//        Matcher matcher = pattern.matcher(extraString);
-//
-//        if(matcher.groupCount() >=3){
-//            int a = matcher.groupCount();
-//            if (matcher.lookingAt()){
-//                String iso = matcher.group(1);
-//                String temp = matcher.group(2);
-//                int len = temp.length();
-//                String type = temp.substring(2, len - 1);
-//                temp = matcher.group(3);
-//                len = temp.length();
-//                String value = temp.substring(2, len - 1);
-//
-//                Log.d("debug", "type" + type);
-//                Log.d("debug", "temp" + temp);
-//                Log.d("debug", "iso" + iso);
-//
-//                Log.d("debug", "matcher.group(3)" + matcher.group(3));
-//
-////                tvMap.put(type, value);
-//
-//                dataItems.add(i, new DataItem(i, "order", type, value, iso, "172.22.1.22"));
-//            }
-//
-//        }
+        }
 
     private static void dealData(String extraString, List<DataItem> itemList) {
         HashMap<Integer, String> patternMap = new HashMap<>();

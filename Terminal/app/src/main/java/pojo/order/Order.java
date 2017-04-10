@@ -27,18 +27,26 @@ public class Order {
 
     @JsonField(name ="machine_port")
     private String machine_port;
+
+    @JsonField(name ="type")
+    private String type;
+
+    @JsonField(name ="value")
+    private String value;
     public Order()
     {
 
     }
 
-    public Order(int id, int machineType, int orderType, String orderName, String ip, String machine_port) {
+    public Order(int id, int machineType, int orderType, String orderName, String ip, String machine_port, String type, String value) {
         this.id = id;
         this.machineType = machineType;
         this.orderType = orderType;
         this.orderName = orderName;
         this.ip = ip;
         this.machine_port = machine_port;
+        this.type = type;
+        this.value = value;
     }
 
     public int getId() {
@@ -89,6 +97,22 @@ public class Order {
         this.machine_port = machine_port;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
     @Override
     public String toString() {
         return
@@ -99,6 +123,9 @@ public class Order {
                         ",orderName = '" + orderName + '\'' +
                         ",ip = '" + ip + '\'' +
                         ",machine_port = '" + machine_port + '\'' +
+                        ",type = '" + type + '\'' +
+                        ",value = '" + value + '\'' +
+
                         "}";
     }
 

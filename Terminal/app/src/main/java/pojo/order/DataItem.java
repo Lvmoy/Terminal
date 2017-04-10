@@ -13,7 +13,7 @@ public class DataItem {
     private String iso;
     private String ip;
 
-    DataItem(){}
+    public DataItem(){}
 
     public DataItem(int id, String name, String type, String value, String iso, String ip) {
         this.id = id;

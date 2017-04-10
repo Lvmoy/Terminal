@@ -14,7 +14,10 @@
             android:name=".OpenningActivity"
             android:screenOrientation="landscape"
            >
-
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
 
         <activity android:name=".MainActivity"
@@ -22,15 +25,12 @@
             android:screenOrientation="landscape"
 
             >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+
             </activity>
 
         <activity android:name=".LoginActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
+            android:screenOrientation="landscape"
             />
 
         <activity android:name=".HomeDetailActivity"
